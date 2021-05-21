@@ -25,17 +25,17 @@
 #include <Arduino.h>
 
 //DECLARAÇÃO DAS VARIÁVEIS DO SISTEMA
-const int seatSensor = 22; //Sensor de assento
-const int btnMode1 = 24; //Botão que ativa o Modo 1
-const int btnMode2 = 26; //Botão que ativa o modo 2
-const int cover1 = 28; //Tampa de cima
-const int cover2 = 30; //Tampa de baixo
-const int cover1r = 32; //Tampa de cima reversão do motor
-const int cover2r = 34; //Tampa de baixo reversão do motor
-const int dischargeLow = 36; //Discarga baixa
-const int dischargeHigh = 38; //Discarga Turbo
-const int heater = 40; //Aquecedor do assento
-const int sanitation = 42; //Sistema de higienização
+const int seatSensor = 2; //Sensor de assento
+const int btnMode1 = 3; //Botão que ativa o Modo 1
+const int btnMode2 = 4; //Botão que ativa o modo 2
+const int cover1 = 5; //Tampa de cima
+const int cover2 = 6; //Tampa de baixo
+const int cover1r = 7; //Tampa de cima reversão do motor
+const int cover2r = 8; //Tampa de baixo reversão do motor
+const int dischargeLow = 9; //Discarga baixa
+const int dischargeHigh = 10; //Discarga Turbo
+const int heater = 11; //Aquecedor do assento
+const int sanitation = 12; //Sistema de higienização
 
 int stateCover1 = 0; //SE IGUAL A 1 TAMPA DE CIMA LEVANTADA SE IGUAL 0 TAMPA DE CIMA ABAIXADA
 int stateCover2 = 0; //SE IGUAL A 1 TAMPA DE BAIXO ABERTA, SE IGUAL A 0 TAMPA DE BAIXO FECHADA
@@ -87,12 +87,16 @@ void loop() {
     Serial.println("TAMPAS ABERTAS");
     delay(100);
   } else if ((digitalRead(btnMode1) == HIGH) && (stateCover1 == 1) && (stateCover2 == 1)) { //VERIFICA SE BOTÃO MODO 1 PRESSIONADO AND TAMPAS ABERTAS AND MODO 1 LIGADO
-    //ROTINA REALIZADA QUANDO AS TAMPAS ESTÃO ABERTAS NO MODO 1
+    //ROTINA REALIZADA QUANDO AS TAMPAS ESTÃO ABERTAS NO MODO 1, PARA FECHAR A TAMPA É NECESSÁRIO AS DUAS SAÍDAS ATIVAS
     digitalWrite(cover1r, HIGH); //FECHA TAMPA DE CIMA
     digitalWrite(cover2r, HIGH); //FECHA TAMPA DE BAIXO
+    digitalWrite(cover1, HIGH);
+    digitalWrite(cover2, HIGH);
     delay(3000); //TEMPO PARA FECHAR AS TAMPAS
-    digitalWrite(cover1r, LOW); //FECHA TAMPA DE CIMA
-    digitalWrite(cover2r, LOW); //FECHA TAMPA DE BAIXO
+    digitalWrite(cover1, LOW);
+    digitalWrite(cover2, LOW);
+    digitalWrite(cover1r, LOW);
+    digitalWrite(cover2r, LOW);
     stateCover1 = 0; //TAMPA DE CIMA ABAIXADA
     stateCover2 = 0; //TAMPA DE BAIXO ABAIXADA
     Serial.println("TAMPAS FECHADAS E ATIVANDO DESCARGA BAIXA");
@@ -125,9 +129,10 @@ void loop() {
     mode2 = 2;
     delay(100);
   } else if ((stateSeatSensor == 0) && (stateCover1 == 1) && (stateCover2 == 0) && (mode2 == 2)) {
-    //ROTINA REALIZADA APÓS A HIGIENIZAÇÃO NO MODO 2
+    //ROTINA REALIZADA APÓS A HIGIENIZAÇÃO NO MODO 2, FECHAMENTO DA TAMPA, É NECESSÁRIO AS DUAS SAÍDAS ATIVAS
     delay(3000); //TEMPO PARA A PESSOA LEVANTAR DO ASSENTO
     digitalWrite(cover1r, HIGH); //FECHA TAMPA DE CIMA
+    digitalWrite(cover1, HIGH);
     delay(3000); //TEMPO PARA FECHAR AS TAMPAS
     digitalWrite(cover1r, LOW); //FECHA TAMPA DE CIMA
     mode2 = 0; //MODO 1 ATIVO
